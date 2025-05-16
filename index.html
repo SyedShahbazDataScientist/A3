@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Data Dashboard v11</title>
+    <!-- Load D3.js first -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="enhanced-style.css">
+    <link rel="stylesheet" href="sunburst-zoom.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <h1>Interactive Data Dashboard</h1>
+            <div class="user-info">
+                <p>User: <span id="username">SyedShahbazDataScientist</span></p>
+                <p>Last Updated: <span id="timestamp">2025-05-13 10:31:39</span></p>
+            </div>
+        </header>
+
+        <div class="controls-section">
+            <div class="file-controls">
+                <div class="sample-data-section">
+                    <h3>Sample Data</h3>
+                    <select id="datasetSelector">
+                        <option value="music_artists">Music Artists Dataset</option>
+                        <option value="pakistani_companies">Pakistani Companies Dataset</option>
+                    </select>
+                    <button id="loadSampleData">Load Sample Data</button>
+                </div>
+                
+                <div class="upload-section">
+                    <h3>Upload Your Data</h3>
+                    <div id="dropZone" class="drop-zone">
+                        <span class="drop-zone-prompt">Drag & drop JSON file here or click to upload</span>
+                        <input type="file" id="fileInput" accept=".json" class="drop-zone-input">
+                    </div>
+                    <div id="uploadedFileName" class="file-name" style="display: none;"></div>
+                    <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+                        <div class="spinner"></div>
+                        <span>Processing data...</span>
+                    </div>
+                    <p class="help-text">Upload any JSON file containing an array of objects. Arrays can also be nested within a JSON object.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Field selection interface will appear after data is loaded -->
+        <div id="fieldSelectionContainer" class="field-selector" style="display: none;">
+            <h2>Select Fields for Visualization</h2>
+            
+            <div class="field-group" id="radialFields">
+                <h3>Radial Bar Chart Fields</h3>
+                <div>
+                    <label class="field-label">Category Field:</label>
+                    <select id="radialCategory"></select>
+                </div>
+                <div>
+                    <label class="field-label">Value Field:</label>
+                    <select id="radialValue"></select>
+                </div>
+            </div>
+            
+            <div class="field-group" id="chordFields">
+                <h3>Chord Diagram Fields</h3>
+                <div>
+                    <label class="field-label">Entity Field:</label>
+                    <select id="chordEntity"></select>
+                </div>
+                <div>
+                    <label class="field-label">Relations Field:</label>
+                    <select id="chordRelations"></select>
+                </div>
+            </div>
+            
+            <div class="field-group" id="forceFields">
+                <h3>Force-Directed Graph Fields</h3>
+                <div>
+                    <label class="field-label">Entity Field:</label>
+                    <select id="forceEntity"></select>
+                </div>
+                <div>
+                    <label class="field-label">Relations Field:</label>
+                    <select id="forceRelations"></select>
+                </div>
+                <div>
+                    <label class="field-label">Group By Field (Optional):</label>
+                    <select id="forceGroup"></select>
+                </div>
+            </div>
+            
+            <div class="field-group" id="sunburstFields">
+                <h3>Sunburst Chart Fields</h3>
+                <div>
+                    <label class="field-label">Entity Field:</label>
+                    <select id="sunburstEntity"></select>
+                </div>
+                <div>
+                    <label class="field-label">Group Field:</label>
+                    <select id="sunburstGroup"></select>
+                </div>
+                <div>
+                    <label class="field-label">Relations Field:</label>
+                    <select id="sunburstRelations"></select>
+                </div>
+            </div>
+            
+            <button id="applyFields">Apply Field Selection</button>
+        </div>
+
+        <!-- Filter panel will appear after field selection -->
+        <div id="filterContainer" class="filter-container" style="display: none;">
+            <h2>Filter Data</h2>
+            <div id="categoricalFilters"></div>
+            <div id="numericalFilters"></div>
+        </div>
+
+        <!-- Dashboard grid will contain all visualizations -->
+        <div class="dashboard-grid">
+            <div class="chart-container">
+                <div class="chart-title">Radial Bar Chart</div>
+                <div id="radialChart"></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Chord Diagram</div>
+                <div id="chordDiagram"></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Force-Directed Graph</div>
+                <div id="forceGraph"></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Sunburst Chart</div>
+                <div id="sunburstChart"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load our scripts in correct order -->
+    <script src="constants.js"></script>
+    <script src="dataParser.js"></script>
+    <script src="utils.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

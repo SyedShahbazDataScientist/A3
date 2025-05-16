@@ -1,0 +1,194 @@
+/* Sunburst Chart zoom controls */
+#sunburstChart {
+    position: relative;
+    overflow: visible;
+}
+
+#sunburstChart svg {
+    cursor: grab;
+}
+
+#sunburstChart svg:active {
+    cursor: grabbing;
+}
+
+.sunburst-arc {
+    transition: opacity 0.3s ease, stroke-width 0.2s ease;
+}
+
+.sunburst-arc:hover {
+    stroke-width: 1.5;
+    cursor: pointer;
+}
+
+.breadcrumb {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 8px 12px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    max-width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.breadcrumb span {
+    transition: color 0.2s ease;
+}
+
+.breadcrumb span:hover {
+    text-decoration: underline;
+}
+
+.zoom-out, .zoom-out-icon {
+    transition: transform 0.2s ease, opacity 0.3s ease;
+}
+
+.zoom-out:hover, .zoom-out-icon:hover {
+    transform: scale(1.1);
+}
+
+.help-text {
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Add a zoom cursor icon when hovering over the chart */
+#sunburstChart .force-container {
+    cursor: move;
+}
+
+/* Styling for sunburst chart text */
+#sunburstChart text {
+  font-family: Arial, sans-serif;
+  font-size: 2.5px; /* Even smaller than previous 3.33px */
+  pointer-events: none;
+  text-anchor: middle;
+  fill: #333;
+  /* Text shadow using medium grey instead of white */
+  text-shadow: 
+    -0.33px -0.33px 0 #888888,
+    0.33px -0.33px 0 #888888,
+    -0.33px 0.33px 0 #888888,
+    0.33px 0.33px 0 #888888;
+}
+
+/* Add stroke to text for better readability - use darker grey instead of white */
+#sunburstChart text {
+  stroke: #666666;
+  stroke-width: 0.15px; /* Smaller stroke */
+  paint-order: stroke fill;
+}
+
+/* Hide text that would be too small to read */
+#sunburstChart .too-small-text {
+  opacity: 0;
+}
+
+/* Make text visible when its segment is zoomed in */
+#sunburstChart .active-segment text {
+  opacity: 1 !important;
+}
+
+/* Adjust text opacity based on arc size */
+#sunburstChart .small-arc text {
+  opacity: 0.7;
+}
+
+/* Improve text styling - avoid white and enhance contrast */
+#sunburstChart text {
+  /* Use dark text with contrasting outline */
+  fill: #000000;
+  /* Replace with dark gray outline */
+  stroke: rgba(70, 70, 70, 0.3);
+  stroke-width: 0.12px; /* Smaller */
+  /* Replace shadow with grey translucent shadow */
+  text-shadow: 
+    0 0 1px rgba(130, 130, 130, 0.8),
+    0 0 0.5px rgba(110, 110, 110, 0.9);
+  /* Improve font weight for better readability */
+  font-weight: 500;
+}
+
+/* Adjust text size for better visibility */
+#sunburstChart .zoomed-label {
+  font-size: 2.8px !important; /* Smaller than previous */
+  font-weight: 600;
+}
+
+/* Make zoomed segments more readable with improved contrast */
+#sunburstChart .zoomed-segment text {
+  fill: #000;
+  text-shadow: 
+    0 0 1.33px rgba(180, 180, 180, 0.9),
+    0 0 0.67px rgba(160, 160, 160, 0.9);
+  stroke-width: 0.15px;
+}
+
+/* Enhance readability for zoomed segments - use grey instead of white */
+#sunburstChart .zoomed-segment text {
+  text-shadow: 
+    -0.4px -0.4px 0 #777777,
+    0.4px -0.4px 0 #777777,
+    -0.4px 0.4px 0 #777777,
+    0.4px 0.4px 0 #777777;
+  stroke-width: 0.2px;
+}
+
+/* Better sizing for different segments */
+#sunburstChart .large-segment text {
+  font-size: 3px; /* Smaller */
+}
+
+#sunburstChart .medium-segment text {
+  font-size: 2.5px; /* Smaller */
+}
+
+#sunburstChart .small-segment text {
+  font-size: 2px; /* Smaller */
+}
+
+/* Adapt text color based on background brightness */
+#sunburstChart .light-background text {
+  fill: #222;
+  stroke: rgba(50, 50, 50, 0.3);
+  text-shadow: 
+    0 0 1px rgba(150, 150, 150, 0.8),
+    0 0 0.5px rgba(130, 130, 130, 0.9);
+}
+
+#sunburstChart .dark-background text {
+  fill: #ddd; /* Light grey instead of white */
+  stroke: rgba(120, 120, 120, 0.5);
+  text-shadow: 
+    0 0 3px rgba(120, 120, 120, 0.6),
+    0 0 2px rgba(140, 140, 140, 0.8);
+}
+
+/* Improve transitions */
+#sunburstChart text {
+  transition: font-size 0.3s ease-out, fill 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Improve text appearance during zoom */
+#sunburstChart .zoomed-label {
+  font-size: 2.8px !important; /* Smaller */
+  font-weight: bold;
+}
+
+/* Improve text for very small segments when zoomed */
+#sunburstChart .small-segment-zoomed text {
+  font-size: 2px !important; /* Smaller */
+}
+
+/* Handle text rotation for better readability */
+#sunburstChart .horizontal-text {
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+/* Adjust text display smoothly during transitions */
+#sunburstChart text {
+  transition: font-size 0.3s ease-out, opacity 0.3s ease-out, text-shadow 0.3s ease-out;
+}
