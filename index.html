@@ -3,145 +3,402 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Data Dashboard v11</title>
-    <!-- Load D3.js first -->
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <title>Data Visualization Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="enhanced-style.css">
-    <link rel="stylesheet" href="sunburst-zoom.css">
 </head>
 <body>
     <div class="dashboard-container">
-        <header>
-            <h1>Interactive Data Dashboard</h1>
-            <div class="user-info">
-                <p>User: <span id="username">SyedShahbazDataScientist</span></p>
-                <p>Last Updated: <span id="timestamp">2025-05-13 10:31:39</span></p>
+        <!-- Header Section -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1>Interactive Data Visualization Dashboard</h1>
+                <p class="subtitle">Upload any flat JSON data and explore through advanced visualizations</p>
+            </div>
+            <div class="header-right">
+                <div class="dashboard-info">
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        <span id="timestamp"></span>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-user"></i>
+                        <span id="username"></span>
+                    </div>
+                </div>
             </div>
         </header>
 
-        <div class="controls-section">
-            <div class="file-controls">
-                <div class="sample-data-section">
-                    <h3>Sample Data</h3>
-                    <select id="datasetSelector">
-                        <option value="music_artists">Music Artists Dataset</option>
-                        <option value="pakistani_companies">Pakistani Companies Dataset</option>
-                    </select>
-                    <button id="loadSampleData">Load Sample Data</button>
+        <!-- Data Input Section -->
+        <section class="data-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-file-upload"></i> Data Input</h2>
                 </div>
-                
-                <div class="upload-section">
-                    <h3>Upload Your Data</h3>
-                    <div id="dropZone" class="drop-zone">
-                        <span class="drop-zone-prompt">Drag & drop JSON file here or click to upload</span>
-                        <input type="file" id="fileInput" accept=".json" class="drop-zone-input">
+                <div class="card-body">
+                    <div class="upload-area">
+                        <div id="dropZone" class="drop-zone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drag & drop JSON file here or</p>
+                            <label for="fileInput" class="upload-button">
+                                <i class="fas fa-folder-open"></i> Browse Files
+                            </label>
+                            <input type="file" id="fileInput" accept=".json" hidden>
+                        </div>
+                        <div id="uploadedFileName" class="uploaded-file"></div>
+                        <div id="loadingIndicator" class="loading-indicator">
+                            <div class="spinner"></div>
+                            <span>Processing data...</span>
+                        </div>
                     </div>
-                    <div id="uploadedFileName" class="file-name" style="display: none;"></div>
-                    <div id="loadingIndicator" class="loading-indicator" style="display: none;">
-                        <div class="spinner"></div>
-                        <span>Processing data...</span>
+                    <div class="sample-data">
+                        <h3>Or try with sample data:</h3>
+                        <div class="sample-controls">
+                            <select id="datasetSelector" class="dataset-dropdown">
+                                <option value="music_artists">Music Artists Dataset</option>
+                                <option value="tech_companies">Tech Companies Dataset</option>
+                            </select>
+                            <button id="loadSampleData" class="btn primary">
+                                <i class="fas fa-play"></i> Load Sample
+                            </button>
+                        </div>
                     </div>
-                    <p class="help-text">Upload any JSON file containing an array of objects. Arrays can also be nested within a JSON object.</p>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Field selection interface will appear after data is loaded -->
-        <div id="fieldSelectionContainer" class="field-selector" style="display: none;">
-            <h2>Select Fields for Visualization</h2>
-            
-            <div class="field-group" id="radialFields">
-                <h3>Radial Bar Chart Fields</h3>
-                <div>
-                    <label class="field-label">Category Field:</label>
-                    <select id="radialCategory"></select>
+        <!-- Field Selection Section -->
+        <section id="fieldSelectionContainer" class="field-selection-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-columns"></i> Select Fields for Visualization</h2>
                 </div>
-                <div>
-                    <label class="field-label">Value Field:</label>
-                    <select id="radialValue"></select>
-                </div>
-            </div>
-            
-            <div class="field-group" id="chordFields">
-                <h3>Chord Diagram Fields</h3>
-                <div>
-                    <label class="field-label">Entity Field:</label>
-                    <select id="chordEntity"></select>
-                </div>
-                <div>
-                    <label class="field-label">Relations Field:</label>
-                    <select id="chordRelations"></select>
-                </div>
-            </div>
-            
-            <div class="field-group" id="forceFields">
-                <h3>Force-Directed Graph Fields</h3>
-                <div>
-                    <label class="field-label">Entity Field:</label>
-                    <select id="forceEntity"></select>
-                </div>
-                <div>
-                    <label class="field-label">Relations Field:</label>
-                    <select id="forceRelations"></select>
-                </div>
-                <div>
-                    <label class="field-label">Group By Field (Optional):</label>
-                    <select id="forceGroup"></select>
-                </div>
-            </div>
-            
-            <div class="field-group" id="sunburstFields">
-                <h3>Sunburst Chart Fields</h3>
-                <div>
-                    <label class="field-label">Entity Field:</label>
-                    <select id="sunburstEntity"></select>
-                </div>
-                <div>
-                    <label class="field-label">Group Field:</label>
-                    <select id="sunburstGroup"></select>
-                </div>
-                <div>
-                    <label class="field-label">Relations Field:</label>
-                    <select id="sunburstRelations"></select>
-                </div>
-            </div>
-            
-            <button id="applyFields">Apply Field Selection</button>
-        </div>
+                <div class="card-body">
+                    <div class="field-selections-grid">
+                        <!-- Radial Bar Chart Fields -->
+                        <div class="chart-fields-container">
+                            <h3><i class="fas fa-chart-pie"></i> Radial Bar Chart</h3>
+                            <div class="field-group">
+                                <label for="radialCategory">Category Field:</label>
+                                <select id="radialCategory" class="field-select"></select>
+                            </div>
+                            <div class="field-group">
+                                <label for="radialValue">Value Field:</label>
+                                <select id="radialValue" class="field-select"></select>
+                            </div>
+                        </div>
 
-        <!-- Filter panel will appear after field selection -->
-        <div id="filterContainer" class="filter-container" style="display: none;">
-            <h2>Filter Data</h2>
-            <div id="categoricalFilters"></div>
-            <div id="numericalFilters"></div>
-        </div>
+                        <!-- Chord Diagram Fields -->
+                        <div class="chart-fields-container">
+                            <h3><i class="fas fa-project-diagram"></i> Chord Diagram</h3>
+                            <div class="field-group">
+                                <label for="chordEntity">Entity Field:</label>
+                                <select id="chordEntity" class="field-select"></select>
+                            </div>
+                            <div class="field-group">
+                                <label for="chordRelations">Relations Field:</label>
+                                <select id="chordRelations" class="field-select"></select>
+                            </div>
+                        </div>
 
-        <!-- Dashboard grid will contain all visualizations -->
-        <div class="dashboard-grid">
-            <div class="chart-container">
-                <div class="chart-title">Radial Bar Chart</div>
-                <div id="radialChart"></div>
+                        <!-- Force-Directed Graph Fields -->
+                        <div class="chart-fields-container">
+                            <h3><i class="fas fa-network-wired"></i> Force-Directed Graph</h3>
+                            <div class="field-group">
+                                <label for="forceEntity">Entity Field:</label>
+                                <select id="forceEntity" class="field-select"></select>
+                            </div>
+                            <div class="field-group">
+                                <label for="forceRelations">Relations Field:</label>
+                                <select id="forceRelations" class="field-select"></select>
+                            </div>
+                            <div class="field-group">
+                                <label for="forceGroup">Group Field (optional):</label>
+                                <select id="forceGroup" class="field-select"></select>
+                            </div>
+                        </div>
+
+                        <!-- Sunburst Chart Fields -->
+                        <div class="chart-fields-container">
+                            <h3><i class="fas fa-sun"></i> Sunburst Chart</h3>
+                            <div class="field-group">
+                                <label for="sunburstEntity">Entity Field:</label>
+                                <select id="sunburstEntity" class="field-select"></select>
+                            </div>
+                            <div class="field-group">
+                                <label for="sunburstGroup">Group Field:</label>
+                                <select id="sunburstGroup" class="field-select"></select>
+                            </div>
+                            <div class="field-group">
+                                <label for="sunburstRelations">Relations Field:</label>
+                                <select id="sunburstRelations" class="field-select"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-bar">
+                        <button id="applyFields" class="btn primary">
+                            <i class="fas fa-check"></i> Apply Field Selection
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="chart-container">
-                <div class="chart-title">Chord Diagram</div>
-                <div id="chordDiagram"></div>
+        </section>
+
+        <!-- Filters Section -->
+        <section id="filterContainer" class="filters-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-filter"></i> Filters</h2>
+                    <div class="card-header-actions">
+                        <button id="expandFilters" class="btn secondary small">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body collapsible">
+                    <div class="filters-grid">
+                        <div id="categoricalFilters" class="filter-column"></div>
+                        <div id="numericalFilters" class="filter-column"></div>
+                    </div>
+                </div>
             </div>
-            <div class="chart-container">
-                <div class="chart-title">Force-Directed Graph</div>
-                <div id="forceGraph"></div>
+        </section>
+
+        <!-- Visualizations Section -->
+        <section class="visualizations-section">
+            <div class="viz-grid">
+                <!-- Radial Bar Chart -->
+                <div class="viz-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-chart-pie"></i> Radial Bar Chart</h2>
+                            <div class="card-header-actions">
+                                <button class="btn secondary small fullscreen-btn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="radialChart" class="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chord Diagram -->
+                <div class="viz-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-project-diagram"></i> Chord Diagram</h2>
+                            <div class="card-header-actions">
+                                <button class="btn secondary small fullscreen-btn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="chordDiagram" class="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Force-Directed Graph -->
+                <div class="viz-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-network-wired"></i> Force-Directed Graph</h2>
+                            <div class="card-header-actions">
+                                <button class="btn secondary small fullscreen-btn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="forceGraph" class="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sunburst Chart -->
+                <div class="viz-container">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-sun"></i> Sunburst Chart</h2>
+                            <div class="card-header-actions">
+                                <button class="btn secondary small fullscreen-btn">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="sunburstChart" class="chart-container"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="chart-container">
-                <div class="chart-title">Sunburst Chart</div>
-                <div id="sunburstChart"></div>
-            </div>
-        </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="dashboard-footer">
+            <p>Interactive Data Visualization Dashboard - Created for A3 Assignment</p>
+        </footer>
     </div>
 
-    <!-- Load our scripts in correct order -->
-    <script src="constants.js"></script>
-    <script src="dataParser.js"></script>
-    <script src="utils.js"></script>
-    <script src="main.js"></script>
+    <!-- Sample Data -->
+    <script>
+        const SAMPLE_DATA = {
+            music_artists: [
+                {
+                    "name": "The Beatles",
+                    "genre": "Rock",
+                    "followers": 13500000,
+                    "albums": 13,
+                    "collaborators": ["Rolling Stones", "Beach Boys", "Bob Dylan", "Eric Clapton"]
+                },
+                {
+                    "name": "Queen",
+                    "genre": "Rock",
+                    "followers": 11200000,
+                    "albums": 15,
+                    "collaborators": ["David Bowie", "Adam Lambert", "Annie Lennox"]
+                },
+                {
+                    "name": "Michael Jackson",
+                    "genre": "Pop",
+                    "followers": 19800000,
+                    "albums": 10,
+                    "collaborators": ["Paul McCartney", "Janet Jackson", "Madonna", "Eddie Van Halen"]
+                },
+                {
+                    "name": "Madonna",
+                    "genre": "Pop",
+                    "followers": 9700000,
+                    "albums": 14,
+                    "collaborators": ["Justin Timberlake", "Michael Jackson", "Britney Spears"]
+                },
+                {
+                    "name": "Beyoncé",
+                    "genre": "R&B",
+                    "followers": 15600000,
+                    "albums": 7,
+                    "collaborators": ["Jay-Z", "Shakira", "Lady Gaga", "Ed Sheeran"]
+                },
+                {
+                    "name": "Jay-Z",
+                    "genre": "Hip Hop",
+                    "followers": 8900000,
+                    "albums": 13,
+                    "collaborators": ["Kanye West", "Beyoncé", "Rihanna", "Alicia Keys"]
+                },
+                {
+                    "name": "Rihanna",
+                    "genre": "R&B",
+                    "followers": 14300000,
+                    "albums": 8,
+                    "collaborators": ["Drake", "Eminem", "Jay-Z", "Calvin Harris"]
+                },
+                {
+                    "name": "Drake",
+                    "genre": "Hip Hop",
+                    "followers": 12900000,
+                    "albums": 6,
+                    "collaborators": ["Rihanna", "The Weeknd", "Nicki Minaj", "Future"]
+                }
+            ],
+            tech_companies: [
+                {
+                    "company": "Apple",
+                    "industry": "Consumer Electronics",
+                    "founded": 1976,
+                    "employees": 147000,
+                    "revenue": 274.5,
+                    "headquarters": "Cupertino",
+                    "region": "North America",
+                    "competitors": ["Samsung", "Microsoft", "Google", "Xiaomi"]
+                },
+                {
+                    "company": "Microsoft",
+                    "industry": "Software",
+                    "founded": 1975,
+                    "employees": 181000,
+                    "revenue": 168.1,
+                    "headquarters": "Redmond",
+                    "region": "North America",
+                    "competitors": ["Apple", "Google", "Oracle", "IBM"]
+                },
+                {
+                    "company": "Amazon",
+                    "industry": "E-commerce",
+                    "founded": 1994,
+                    "employees": 1335000,
+                    "revenue": 386.1,
+                    "headquarters": "Seattle",
+                    "region": "North America",
+                    "competitors": ["Walmart", "eBay", "Alibaba", "Target"]
+                },
+                {
+                    "company": "Google",
+                    "industry": "Internet Services",
+                    "founded": 1998,
+                    "employees": 156500,
+                    "revenue": 182.5,
+                    "headquarters": "Mountain View",
+                    "region": "North America",
+                    "competitors": ["Microsoft", "Apple", "Facebook", "Baidu"]
+                },
+                {
+                    "company": "Samsung",
+                    "industry": "Consumer Electronics",
+                    "founded": 1938,
+                    "employees": 267937,
+                    "revenue": 197.6,
+                    "headquarters": "Seoul",
+                    "region": "Asia",
+                    "competitors": ["Apple", "Xiaomi", "Huawei", "LG"]
+                },
+                {
+                    "company": "Facebook",
+                    "industry": "Social Media",
+                    "founded": 2004,
+                    "employees": 58604,
+                    "revenue": 85.9,
+                    "headquarters": "Menlo Park",
+                    "region": "North America",
+                    "competitors": ["Twitter", "Snapchat", "TikTok", "LinkedIn"]
+                },
+                {
+                    "company": "Tencent",
+                    "industry": "Internet Services",
+                    "founded": 1998,
+                    "employees": 112771,
+                    "revenue": 74.4,
+                    "headquarters": "Shenzhen",
+                    "region": "Asia",
+                    "competitors": ["Alibaba", "ByteDance", "Facebook", "NetEase"]
+                },
+                {
+                    "company": "Alibaba",
+                    "industry": "E-commerce",
+                    "founded": 1999,
+                    "employees": 258578,
+                    "revenue": 72.0,
+                    "headquarters": "Hangzhou",
+                    "region": "Asia",
+                    "competitors": ["Amazon", "JD.com", "eBay", "Walmart"]
+                }
+            ]
+        };
+    </script>
+
+    <!-- D3.js Library -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="js/radial_bar.js"></script>
+    <script src="js/chord.js"></script>
+    <script src="js/force_directed.js"></script>
+    <script src="js/sunburst.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
