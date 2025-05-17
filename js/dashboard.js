@@ -41,6 +41,9 @@ class Dashboard {
         this.currentDateTime = new Date().toLocaleString();
         this.currentUser = "SyedShahbazDataScientist";
         
+        // Add resize listener for responsive charts
+        window.addEventListener('resize', this.handleResize.bind(this));
+        
         this.initialize();
     }
 
@@ -576,16 +579,15 @@ class Dashboard {
         numericalContainer.style.display = hasNumericalFilters ? 'block' : 'none';
         categoricalContainer.style.display = hasCategoricalFilters ? 'block' : 'none';
         
-        // Add a button to reset all filters
+        // Add a button to reset all filters - FIXED: Now uses UIControls to prevent duplication
         if (hasNumericalFilters || hasCategoricalFilters) {
-            const resetAllBtn = document.createElement('button');
-            resetAllBtn.id = 'resetAllFilters';
-            resetAllBtn.textContent = 'Reset All Filters';
-            resetAllBtn.className = 'reset-all-btn';
+            const filterContainer = document.getElementById('filterContainer');
+            const resetAllBtn = UIControls.updateResetAllFiltersButton(filterContainer);
             resetAllBtn.addEventListener('click', () => this.resetAllFilters());
-            
-            document.getElementById('filterContainer').appendChild(resetAllBtn);
         }
+        
+        // Initialize filter UI controls after widgets are created
+        UIControls.initializeFilterControls();
     }
     
     resetAllFilters() {
@@ -823,6 +825,16 @@ class Dashboard {
         this.chordDiagram = new ChordDiagram('#chordDiagram', this.tooltip, this);
         this.forceGraph = new ForceDirectedGraph('#forceGraph', this.tooltip, this);
         this.sunburstChart = new SunburstChart('#sunburstChart', this.tooltip, this);
+    }
+    
+    handleResize() {
+        // Only redraw if charts are already rendered
+        if (this.data && document.getElementById('radialChart').innerHTML !== '') {
+            // Add a small delay to ensure DOM updates are complete
+            setTimeout(() => {
+                this.renderAllVisualizations();
+            }, 100);
+        }
     }
 }
 

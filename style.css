@@ -352,6 +352,13 @@ body {
     gap: 20px;
 }
 
+.filter-column {
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    background-color: #ffffff;
+}
+
 .filter-column h3 {
     font-size: 16px;
     margin-bottom: 15px;
@@ -360,9 +367,87 @@ body {
     padding-bottom: 5px;
 }
 
-.reset-filter-btn {
-    font-size: 12px;
+.filter-options-container {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.filter-options-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    background: #f6f8fa;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.small-btn {
     padding: 3px 8px;
+    font-size: 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.filter-options-list {
+    max-height: 150px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.checkbox-option {
+    padding: 3px 0;
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-option input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.range-slider-container {
+    position: relative;
+    height: 30px;
+    margin: 10px 0;
+}
+
+.range-filter {
+    position: absolute;
+    width: 100%;
+    pointer-events: none;
+}
+
+.range-filter::-webkit-slider-thumb {
+    pointer-events: auto;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--primary-color);
+    border-radius: 50%;
+}
+
+.range-filter::-moz-range-thumb {
+    pointer-events: auto;
+    width: 16px;
+    height: 16px;
+    background: var(--primary-color);
+    border-radius: 50%;
+}
+
+.range-values {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.reset-filter-btn {
+    padding: 2px 6px;
+    font-size: 11px;
+    margin-left: 8px;
     background: var(--accent-color);
     color: white;
     border: none;
@@ -371,19 +456,24 @@ body {
 }
 
 .reset-all-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 15px auto 0;
     padding: 8px 16px;
-    margin-top: 15px;
     background: var(--accent-color);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
+    font-size: 14px;
 }
 
-/* Collapsible section */
+.reset-all-btn i {
+    margin-right: 5px;
+}
+
+/* Collapsible section - FIXED to work properly */
 .collapsible {
     max-height: 0;
     overflow: hidden;
@@ -391,7 +481,7 @@ body {
 }
 
 .collapsible.expanded {
-    max-height: 1000px;
+    max-height: 1500px; /* Increased to accommodate all filters */
 }
 
 /* Visualization Grid */
@@ -519,12 +609,98 @@ body {
     height: 100% !important;
     z-index: 9999;
     background-color: white;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.fullscreen .card-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.fullscreen .card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
     padding: 20px;
-    border-radius: 0;
 }
 
 .fullscreen .chart-container {
-    height: calc(100vh - 120px);
+    height: calc(100vh - 120px) !important;
+    width: 100% !important;
+    flex-grow: 1;
+    position: relative;
+}
+
+.fullscreen-help {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-left: 4px solid var(--primary-color);
+}
+
+.fullscreen-help h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+}
+
+.fullscreen-help ul {
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+.fullscreen-help li {
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.fullscreen-help i {
+    margin-right: 8px;
+    color: var(--primary-color);
+    width: 16px;
+    text-align: center;
+}
+
+.fullscreen-help p:last-child {
+    margin-top: 10px;
+    font-style: italic;
+    color: var(--secondary-color);
+}
+
+/* Chart title in fullscreen mode */
+.fullscreen .card-header h2 {
+    font-size: 20px;
+}
+
+/* Exit button in fullscreen */
+.fullscreen .fullscreen-btn {
+    background-color: var(--accent-color);
+}
+
+/* Make sure SVG fills the container */
+.chart-container svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Ensure the help content doesn't take too much space */
+.help-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Force charts to redraw properly in fullscreen */
+.fullscreen .chart-container > * {
+    height: 100%;
+    width: 100%;
 }
 
 /* Footer Styles */

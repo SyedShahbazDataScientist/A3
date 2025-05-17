@@ -13,12 +13,14 @@ class ForceDirectedGraph {
     }
     
     render(data, fieldSelection, selectedItems, colorMapping) {
+        const container = this.container.node();
+        
         // Clear previous rendering
         this.svg.selectAll('*').remove();
         
         // Update dimensions
-        this.width = this.container.node().clientWidth;
-        this.height = 400; // Fixed height
+        this.width = container.clientWidth;
+        this.height = container.clientHeight || 400; // Fallback if height is not set
         
         // Update SVG dimensions
         this.svg
@@ -32,6 +34,15 @@ class ForceDirectedGraph {
         // Main graphics container to apply zoom
         const g = this.svg.append("g").attr("class", "force-container");
         
+        // Add helpful instructions
+        this.svg.append("text")
+            .attr("class", "help-text")
+            .attr("x", 10)
+            .attr("y", 20)
+            .attr("font-size", "10px")
+            .attr("fill", "#666")
+            .text("Scroll to zoom, drag to pan, Ctrl+click for multi-select");
+        
         // Check if we have necessary fields
         if (!fieldSelection.entity || !fieldSelection.relations) {
             g.append('text')
@@ -41,15 +52,6 @@ class ForceDirectedGraph {
                 .text('Please select entity and relations fields');
             return;
         }
-        
-        // Add help text for interactions
-        this.svg.append("text")
-            .attr("class", "help-text")
-            .attr("x", 10)
-            .attr("y", 20)
-            .attr("font-size", "10px")
-            .attr("fill", "#666")
-            .text("Scroll to zoom, drag to pan, Ctrl+click for multi-select");
         
         // Use selected fields
         const entityField = fieldSelection.entity;
@@ -392,5 +394,11 @@ class ForceDirectedGraph {
             .on("start", dragstarted)
             .on("drag", dragged)
             .on("end", dragended);
+    }
+    
+    // Add a resize method
+    resize() {
+        // Re-render with updated dimensions
+        this.render();
     }
 }

@@ -11,6 +11,12 @@ class RadialBarChart {
         
         // Create SVG element
         this.svg = this.container.append('svg');
+        
+        // Make the chart responsive
+        this.resizeHandler = () => {
+            this.render();
+        };
+        window.addEventListener('resize', this.resizeHandler);
     }
     
     render(data, fieldSelection, selectedItems, colorMapping) {
@@ -250,5 +256,10 @@ class RadialBarChart {
             .style('font-size', '14px')
             .style('font-weight', 'bold')
             .text(`${categoryField} by ${valueField}`);
+    }
+    
+    destroy() {
+        // Clean up event listeners when chart is destroyed
+        window.removeEventListener('resize', this.resizeHandler);
     }
 }
