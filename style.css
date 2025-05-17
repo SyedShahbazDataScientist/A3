@@ -503,6 +503,27 @@ body {
     position: relative;
 }
 
+/* Fix for fullscreen mode transitions */
+.chart-container {
+    transition: none !important; /* Prevent transitions that could cause dimension issues */
+}
+
+/* Ensure non-fullscreen charts maintain dimensions */
+.viz-container:not(.fullscreen) .chart-container {
+    width: 100%; /* Default to container width */
+}
+
+/* Only apply special dimensions for fullscreen mode */
+.fullscreen .chart-container {
+    width: 100% !important;
+    height: calc(100vh - 120px) !important;
+}
+
+/* Reset dimensions when exiting fullscreen */
+.card:not(.fullscreen) .chart-container {
+    max-width: 100%; /* Prevent overflow in normal view */
+}
+
 /* Tooltip Styling */
 .tooltip {
     position: absolute;

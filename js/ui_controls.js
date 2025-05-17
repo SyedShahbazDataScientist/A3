@@ -145,6 +145,73 @@ class UIControls {
         
         return resetAllBtn;
     }
+    
+    /**
+     * Initialize fullscreen controls for charts
+     */
+    static initializeFullscreenControls() {
+        // Store original dimensions before entering fullscreen
+        const originalDimensions = {};
+
+        document.querySelectorAll('.fullscreen-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.card');
+                const container = card.querySelector('.chart-container');
+                const chartId = container.id;
+                
+                if (!card.classList.contains('fullscreen')) {
+                    // Enter fullscreen - save current dimensions first
+                    originalDimensions[chartId] = {
+                        width: container.style.width || getComputedWidth(container),
+                        height: container.style.height || getComputedHeight(container)
+                    };
+                    
+                    // Add fullscreen class and change icon
+                    card.classList.add('fullscreen');
+                    this.querySelector('i').classList.remove('fa-expand');
+                    this.querySelector('i').classList.add('fa-compress');
+                    
+                    // Trigger resize for chart to adapt
+                    setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+                } else {
+                    // Exit fullscreen - restore dimensions
+                    card.classList.remove('fullscreen');
+                    this.querySelector('i').classList.remove('fa-compress');
+                    this.querySelector('i').classList.add('fa-expand');
+                    
+                    // Restore original dimensions if available
+                    if (originalDimensions[chartId]) {
+                        container.style.width = originalDimensions[chartId].width;
+                        container.style.height = originalDimensions[chartId].height;
+                    }
+                    
+                    // Trigger resize with slight delay to ensure dimensions are applied
+                    setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+                }
+            });
+        });
+        
+        // Helper function to get computed width
+        function getComputedWidth(element) {
+            return window.getComputedStyle(element).width;
+        }
+        
+        // Helper function to get computed height  
+        function getComputedHeight(element) {
+            return window.getComputedStyle(element).height;
+        }
+    }
+
+    /**
+     * Initialize UI Controls
+     */
+    static initialize() {
+        // Initialize filter controls
+        this.initializeFilterControls();
+        
+        // Initialize fullscreen controls
+        this.initializeFullscreenControls();
+    }
 }
 
 // Initialize UI Controls when DOM is loaded
