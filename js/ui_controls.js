@@ -27,20 +27,21 @@ class UIControls {
         cardBody.classList.toggle('expanded');
     }
     
+    // Update the toggleFullscreen method to fix the sunburst chart display
     toggleFullscreen(event) {
         const card = event.currentTarget.closest('.card');
         const chartContainer = card.querySelector('.chart-container');
-        const chartTitle = card.querySelector('.card-header h2').textContent;
+        const chartId = chartContainer.id;
         
         // Toggle fullscreen class
         card.classList.toggle('fullscreen');
         
-        // Toggle button icon between expand and compress
+        // Toggle button icon
         const icon = event.currentTarget.querySelector('i');
         icon.classList.toggle('fa-expand');
         icon.classList.toggle('fa-compress');
         
-        // Add/remove fullscreen guidance
+        // Add instruction box in fullscreen mode
         let helpBox = card.querySelector('.fullscreen-help');
         
         if (card.classList.contains('fullscreen')) {
@@ -48,34 +49,64 @@ class UIControls {
             if (!helpBox) {
                 helpBox = document.createElement('div');
                 helpBox.className = 'fullscreen-help';
+                
+                // Special instructions for sunburst
+                let interactions = '';
+                if (chartId === 'sunburstChart') {
+                    interactions = `
+                        <li><i class="fas fa-mouse-pointer"></i> Click segments to zoom in/navigate</li>
+                        <li><i class="fas fa-home"></i> Click center or breadcrumb to navigate out</li>
+                        <li><i class="fas fa-mouse"></i> Drag to pan, scroll to zoom view</li>
+                        <li><i class="fas fa-keyboard"></i> Shift+Click to select items</li>
+                    `;
+                } else {
+                    // Default instructions for other charts
+                    interactions = `
+                        <li><i class="fas fa-mouse"></i> Scroll to zoom in/out</li>
+                        <li><i class="fas fa-hand-paper"></i> Click and drag to pan</li>
+                        <li><i class="fas fa-mouse-pointer"></i> Click elements to select</li>
+                        <li><i class="fas fa-keyboard"></i> Ctrl+Click for multi-select</li>
+                    `;
+                }
+                
                 helpBox.innerHTML = `
                     <div class="help-content">
-                        <h3>Fullscreen Mode: ${chartTitle}</h3>
-                        <p>You can interact with the chart using the following:</p>
-                        <ul>
-                            <li><i class="fas fa-mouse"></i> Scroll to zoom in/out</li>
-                            <li><i class="fas fa-hand-paper"></i> Click and drag to pan</li>
-                            <li><i class="fas fa-mouse-pointer"></i> Click elements to select</li>
-                            <li><i class="fas fa-keyboard"></i> Ctrl+Click for multi-select</li>
-                        </ul>
+                        <h3>${card.querySelector('.card-header h2').textContent}</h3>
+                        <p>You can interact with the chart using:</p>
+                        <ul>${interactions}</ul>
                         <p>Click <i class="fas fa-compress"></i> to exit fullscreen mode</p>
                     </div>
                 `;
+                
                 chartContainer.parentNode.insertBefore(helpBox, chartContainer);
             }
             
-            // Force chart redraw by triggering a resize event
+            // Critical fix: Force redraw after a short delay to ensure proper rendering
             setTimeout(() => {
+                // If sunburst, call its specific resize handler
+                if (chartId === 'sunburstChart' && chartContainer.sunburstResize) {
+                    document.body.style.overflow = 'hidden'; // Prevent page scrolling
+                    chartContainer.style.height = (window.innerHeight - 120) + 'px';
+                    chartContainer.sunburstResize();
+                }
+                
+                // Dispatch resize event for all charts
                 window.dispatchEvent(new Event('resize'));
             }, 100);
         } else {
-            // Remove help box if exiting fullscreen
+            // Exiting fullscreen mode
             if (helpBox) {
                 helpBox.remove();
             }
             
-            // Force chart redraw when exiting fullscreen
+            document.body.style.overflow = ''; // Restore page scrolling
+            chartContainer.style.height = '';
+            
+            // Force redraw after exit
             setTimeout(() => {
+                if (chartId === 'sunburstChart' && chartContainer.sunburstResize) {
+                    chartContainer.sunburstResize();
+                }
                 window.dispatchEvent(new Event('resize'));
             }, 100);
         }

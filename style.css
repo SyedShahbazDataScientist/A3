@@ -572,6 +572,42 @@ body {
     pointer-events: none;
 }
 
+/* Add these styles to better handle very small text in sunburst */
+
+/* Ensure sunburst chart text is crisp */
+.sunburst-label {
+    font-family: 'Arial', sans-serif;
+    font-weight: 600;
+    pointer-events: none;
+    paint-order: stroke;
+    stroke-width: 0.2px;
+    stroke: rgba(0,0,0,0.2);
+    shape-rendering: geometricPrecision;
+    text-rendering: geometricPrecision;
+}
+
+/* Make breadcrumb more readable despite small font */
+.breadcrumb {
+    transform: scale(3); /* Scale up the tiny text */
+    transform-origin: top left;
+    margin-bottom: 10px;
+    padding: 2px 4px;
+    font-family: 'Arial', sans-serif;
+    white-space: nowrap;
+}
+
+/* Ensure tooltip is readable */
+.tooltip {
+    font-size: 12px; /* Keep tooltip readable */
+    max-width: 220px;
+}
+
+/* Improve visibility in fullscreen */
+.fullscreen .sunburst-label {
+    stroke-width: 0.3px;
+    visibility: visible !important;
+}
+
 /* Range slider styles */
 .range-slider-container {
     position: relative;
@@ -605,13 +641,14 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100% !important;
-    height: 100% !important;
+    width: 100vw !important;
+    height: 100vh !important;
     z-index: 9999;
     background-color: white;
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .fullscreen .card-header {
@@ -620,124 +657,112 @@ body {
     z-index: 10;
     background-color: var(--secondary-color);
     color: white;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .fullscreen .card-body {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+    height: calc(100vh - 60px);
     padding: 20px;
+    box-sizing: border-box;
 }
 
 .fullscreen .chart-container {
-    height: calc(100vh - 120px) !important;
-    width: 100% !important;
-    flex-grow: 1;
+    width: 100%;
+    height: calc(100vh - 120px);
+    box-sizing: border-box;
+}
+
+/* Specific fixes for sunburst chart */
+#sunburstChart {
     position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
 }
 
-.fullscreen-help {
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 8px;
-    margin-bottom: 15px;
-    padding: 15px;
-    border-left: 4px solid var(--primary-color);
+#sunburstChart svg {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
-.fullscreen-help h3 {
-    font-size: 18px;
-    margin-bottom: 10px;
-    color: var(--secondary-color);
+.sunburst-arc {
+    transition: opacity 0.3s ease, stroke-width 0.2s ease;
 }
 
-.fullscreen-help ul {
-    padding-left: 20px;
-    margin: 10px 0;
+.sunburst-arc:hover {
+    stroke-width: 1.5;
+    cursor: pointer;
 }
 
-.fullscreen-help li {
-    margin-bottom: 5px;
-    display: flex;
-    align-items: center;
+.breadcrumb {
+    background-color: rgba(240, 240, 240, 0.9);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    color: #000;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 11px;
 }
 
-.fullscreen-help i {
-    margin-right: 8px;
-    color: var(--primary-color);
-    width: 16px;
-    text-align: center;
+.breadcrumb span {
+    color: #000;
+    margin-right: 5px;
+    font-size: 10px;
 }
 
-.fullscreen-help p:last-child {
-    margin-top: 10px;
-    font-style: italic;
-    color: var(--secondary-color);
+.center-circle {
+    transition: opacity 0.3s, r 0.3s;
 }
 
-/* Chart title in fullscreen mode */
-.fullscreen .card-header h2 {
-    font-size: 20px;
+.center-text, .center-icon {
+    font-family: 'Roboto', sans-serif;
+    user-select: none;
 }
 
-/* Exit button in fullscreen */
-.fullscreen .fullscreen-btn {
-    background-color: var(--accent-color);
+.sunburst-label {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    pointer-events: none;
+    text-shadow: none;
 }
 
-/* Make sure SVG fills the container */
-.chart-container svg {
+/* Make sure SVG fills the container in fullscreen */
+.fullscreen #sunburstChart svg {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+/* Make sunburst container fill available space */
+.fullscreen #sunburstChart {
     width: 100%;
     height: 100%;
     display: block;
 }
 
-/* Ensure the help content doesn't take too much space */
-.help-content {
-    max-width: 800px;
-    margin: 0 auto;
+/* Override potential max-width/height constraints */
+.fullscreen .chart-container {
+    max-width: none !important;
+    max-height: none !important;
 }
 
-/* Force charts to redraw properly in fullscreen */
-.fullscreen .chart-container > * {
-    height: 100%;
-    width: 100%;
+/* Enable proper positioning in fullscreen */
+.fullscreen #sunburstChart .breadcrumb {
+    position: absolute !important;
+    top: 10px !important;
+    left: 10px !important;
+    z-index: 1000 !important;
 }
 
-/* Footer Styles */
-.dashboard-footer {
-    padding: 15px;
-    text-align: center;
-    color: var(--secondary-color);
-    font-size: 14px;
-    margin-top: 40px;
-    border-top: 1px solid var(--border-color);
+/* Ensure tooltip uses dark colors */
+.tooltip {
+    background-color: rgba(50, 50, 50, 0.9);
+    color: #f0f0f0;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
-/* Breadcrumb Styles */
-.breadcrumb {
-    display: flex;
-    align-items: center;
-    padding: 5px 10px;
-    background-color: var(--bg-color);
-    border-radius: 4px;
-    font-size: 12px;
-}
-
-.breadcrumb span {
-    cursor: pointer;
-    transition: color 0.3s;
-}
-
-.breadcrumb span:hover {
-    color: var(--primary-color);
-}
-
-/* Animation for chart transitions */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.chart-container * {
-    transition: opacity 0.3s, transform 0.3s;
+.tooltip hr {
+    border-color: #666;
 }

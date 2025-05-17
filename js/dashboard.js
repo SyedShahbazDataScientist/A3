@@ -690,11 +690,44 @@ class Dashboard {
         this.radialChart.render(this.data, this.fieldSelections.radial, this.selectedItems, this.colorMapping);
         this.chordDiagram.render(this.data, this.fieldSelections.chord, this.selectedItems, this.colorMapping);
         this.forceGraph.render(this.data, this.fieldSelections.force, this.selectedItems, this.colorMapping);
-        this.sunburstChart.render(this.data, this.fieldSelections.sunburst, this.selectedItems, this.colorMapping);
+        this.renderSunburstChart();
         
         // Update selection info if there are selected items
         if (this.selectedItems.size > 0) {
             this.updateSelectionInfo();
+        }
+    }
+    
+    renderSunburstChart() {
+        try {
+            // Clear any existing chart
+            const container = document.getElementById('sunburstChart');
+            container.innerHTML = '';
+            
+            // Check if the required fields are selected
+            if (!this.fieldSelections.sunburst.entity || 
+                !this.fieldSelections.sunburst.group || 
+                !this.fieldSelections.sunburst.relations) {
+                container.innerHTML = '<div class="chart-message">Please select entity, group, and relations fields</div>';
+                return;
+            }
+            
+            // Create and render the sunburst chart
+            const sunburst = new SunburstChart(
+                'sunburstChart',
+                this.data,
+                this.fieldSelections.sunburst,
+                this.colorMapping,
+                this.tooltip,
+                this.selectedItems
+            );
+            
+            sunburst.render();
+            
+        } catch (error) {
+            console.error("Error rendering sunburst chart:", error);
+            document.getElementById('sunburstChart').innerHTML = 
+                '<div class="chart-error">Error rendering sunburst chart</div>';
         }
     }
     
