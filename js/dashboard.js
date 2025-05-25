@@ -127,17 +127,17 @@ class Dashboard {
 
         // Update Apply Field Selection button behavior
         document.getElementById('applyFields').addEventListener('click', () => {
-            // Show loading indicator
-            const loadingIndicator = document.getElementById('loadingIndicator');
-            if (loadingIndicator) {
-                loadingIndicator.style.display = 'block';
-            }
+            // Disable button temporarily to prevent multiple clicks
+            const applyButton = document.getElementById('applyFields');
+            applyButton.disabled = true;
             
             // Update field selections
             this.updateFieldSelections();
             
-            // Make sure charts are initialized
-            this.initializeCharts();
+            // Initialize charts immediately if they don't exist
+            if (!this.radialChart) {
+                this.initializeCharts();
+            }
             
             // Create filter widgets
             this.createFilterWidgets();
@@ -148,15 +148,13 @@ class Dashboard {
                 filterContainer.style.display = 'block';
             }
             
-            // Force immediate rendering
+            // IMPORTANT: Render all visualizations IMMEDIATELY - no delays
             this.renderAllVisualizations();
             
-            // Hide loading indicator
+            // Re-enable button after a short delay
             setTimeout(() => {
-                if (loadingIndicator) {
-                    loadingIndicator.style.display = 'none';
-                }
-            }, 500);
+                applyButton.disabled = false;
+            }, 200);
         });
     }
 
@@ -789,56 +787,74 @@ class Dashboard {
     
     // Method to update selection info display
     updateSelectionInfo() {
-        const selectionInfo = document.getElementById('selection-info');
+        // Get or create the selection info container in the sidebar
+        let selectionInfo = document.getElementById('sidebar-selection-info');
         if (!selectionInfo) {
-            // Create selection info element if it doesn't exist
-            const dashboard = document.querySelector('.dashboard-container');
-            const infoContainer = document.createElement('div');
-            infoContainer.id = 'selection-info';
-            infoContainer.className = 'selection-info';
-            infoContainer.style.padding = '10px';
-            infoContainer.style.marginBottom = '10px';
-            infoContainer.style.backgroundColor = '#f8f9fa';
-            infoContainer.style.borderRadius = '4px';
-            infoContainer.style.border = '1px solid #dee2e6';
+            // Create selection info section in the sidebar
+            const sidebar = document.getElementById('sidebar');
+            const selectionSection = document.createElement('div');
+            selectionSection.className = 'sidebar-section';
             
-            // Insert at the top of dashboard
-            dashboard.insertBefore(infoContainer, dashboard.firstChild);
+            // Create section header
+            const header = document.createElement('div');
+            header.className = 'section-header collapsible-header';
+            header.innerHTML = `
+                <i class="fas fa-tags"></i>
+                <span>Selected Items</span>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            `;
+            
+            // Create section content
+            const content = document.createElement('div');
+            content.className = 'section-content expanded';
+            content.id = 'sidebar-selection-info';
+            
+            // Add to sidebar
+            selectionSection.appendChild(header);
+            selectionSection.appendChild(content);
+            sidebar.appendChild(selectionSection);
+            
+            // Add event listener to make it collapsible
+            header.addEventListener('click', (e) => {
+                content.classList.toggle('expanded');
+                const icon = header.querySelector('.toggle-icon');
+                if (content.classList.contains('expanded')) {
+                    icon.className = 'fas fa-chevron-down toggle-icon';
+                } else {
+                    icon.className = 'fas fa-chevron-right toggle-icon';
+                }
+                e.stopPropagation();
+            });
+            
+            selectionInfo = content;
         }
         
-        // Update selection display
-        const selectionDisplay = document.getElementById('selection-info');
-        
+        // Update selection display in sidebar
         if (this.selectedItems.size === 0) {
-            selectionDisplay.innerHTML = 'No items selected <button class="clear-selection-btn" style="margin-left: 10px; padding: 5px 10px; background: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer;">Clear Selection</button>';
+            selectionInfo.innerHTML = '<div class="empty-selection">No items selected</div>';
         } else {
-            let items = Array.from(this.selectedItems).map(item => {
-                return `<span class="selected-item" style="
-                    display: inline-block;
-                    margin: 3px;
-                    padding: 3px 8px;
-                    background-color: #3498db;
-                    color: white;
-                    border-radius: 10px;
-                    font-size: 12px;">${item}</span>`;
+            const items = Array.from(this.selectedItems).map(item => {
+                return `<span class="selected-item">${item}</span>`;
             }).join('');
             
-            selectionDisplay.innerHTML = `Selected items: ${items} <button class="clear-selection-btn" style="
-                margin-left: 10px;
-                padding: 5px 10px;
-                background: #e74c3c;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;">Clear Selection</button>`;
+            selectionInfo.innerHTML = `
+                <div class="selection-list">${items}</div>
+                <button class="clear-selection-btn">Clear Selection</button>
+            `;
+            
+            // Add event listener to clear button
+            selectionInfo.querySelector('.clear-selection-btn').addEventListener('click', () => {
+                this.selectedItems.clear();
+                this.updateSelectionInfo();
+                this.renderAllVisualizations();
+            });
         }
         
-        // Add event listener to clear button
-        document.querySelector('.clear-selection-btn').addEventListener('click', () => {
-            this.selectedItems.clear();
-            this.updateSelectionInfo();
-            this.renderAllVisualizations();
-        });
+        // Hide the main selection info if it exists (the old location)
+        const mainSelectionInfo = document.getElementById('selection-info');
+        if (mainSelectionInfo) {
+            mainSelectionInfo.style.display = 'none';
+        }
     }
 
     clearSelections() {

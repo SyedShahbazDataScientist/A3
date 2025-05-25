@@ -589,3 +589,46 @@ body {
         pointer-events: none;
     }
 }
+
+/* Style for the selection info in the sidebar */
+#sidebar-selection-info {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#sidebar-selection-info .selection-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+#sidebar-selection-info .selected-item {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#sidebar-selection-info .clear-selection-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    width: 100%;
+}
+
+#sidebar-selection-info .empty-selection {
+    color: rgba(255,255,255,0.5);
+    font-size: 12px;
+    text-align: center;
+    padding: 10px 0;
+}
