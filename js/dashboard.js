@@ -127,14 +127,10 @@ class Dashboard {
 
         // Update Apply Field Selection button behavior
         document.getElementById('applyFields').addEventListener('click', () => {
-            // Disable button temporarily to prevent multiple clicks
-            const applyButton = document.getElementById('applyFields');
-            applyButton.disabled = true;
-            
-            // Update field selections
+            // Update field selections immediately
             this.updateFieldSelections();
             
-            // Initialize charts immediately if they don't exist
+            // Initialize charts if needed
             if (!this.radialChart) {
                 this.initializeCharts();
             }
@@ -148,13 +144,8 @@ class Dashboard {
                 filterContainer.style.display = 'block';
             }
             
-            // IMPORTANT: Render all visualizations IMMEDIATELY - no delays
+            // IMPORTANT: Render all visualizations IMMEDIATELY with no delays
             this.renderAllVisualizations();
-            
-            // Re-enable button after a short delay
-            setTimeout(() => {
-                applyButton.disabled = false;
-            }, 200);
         });
     }
 
@@ -585,6 +576,8 @@ class Dashboard {
                 document.querySelectorAll(`.categorical-filter[data-field="${field}"]`).forEach(checkbox => {
                     checkbox.addEventListener('change', () => {
                         this.filterData();
+                        // Re-render visualizations immediately after filtering
+                        this.renderAllVisualizations();
                     });
                 });
                 
@@ -706,7 +699,7 @@ class Dashboard {
             itemsToRemove.forEach(item => this.selectedItems.delete(item));
         }
         
-        // Re-render all visualizations
+        // IMPORTANT: Immediately render all visualizations with the filtered data
         this.renderAllVisualizations();
     }
 

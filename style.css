@@ -456,7 +456,7 @@ body {
 }
 
 .card-body {
-    padding: 15px;
+    padding: 0;
     height: 400px;
     position: relative;
     display: flex;
@@ -465,7 +465,7 @@ body {
 
 /* Fix chart container sizing */
 
-/* Chart containers must fill their containers */
+/* Ensure chart containers fill their space */
 .chart-container {
     width: 100%;
     height: 100%;

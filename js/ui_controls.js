@@ -77,7 +77,7 @@ class UIControls {
         // Toggle the expanded class on the content
         content.classList.toggle('expanded');
         
-        // Update the icon
+        // Update the icon based on current state
         if (content.classList.contains('expanded')) {
             icon.className = 'fas fa-chevron-down toggle-icon';
         } else {
@@ -294,6 +294,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (content) {
                 content.classList.add('expanded');
             }
+        }
+    });
+    
+    // Ensure Apply Fields button updates visualizations immediately
+    document.getElementById('applyFields')?.addEventListener('click', function() {
+        // Force window resize event to ensure visualizations render properly
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
+    });
+    
+    // Ensure filter changes update visualizations immediately
+    document.getElementById('filterContainer')?.addEventListener('change', function(e) {
+        if (e.target.classList.contains('categorical-filter') || 
+            e.target.classList.contains('range-filter')) {
+            // Force window resize event to ensure visualizations render properly
+            setTimeout(() => window.dispatchEvent(new Event('resize')), 0);
         }
     });
 });
