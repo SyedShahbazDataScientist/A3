@@ -1,14 +1,41 @@
 /**
- * UI Controls - Handles user interface interactions and enhancements
+ * UI Controls - Handles user interface interactions
  */
 class UIControls {
     constructor() {
         this.setupEventListeners();
+        this.initializeSections();
     }
 
+    /**
+     * Initialize all sidebar sections
+     */
+    initializeSections() {
+        // Expand all section contents by default
+        document.querySelectorAll('.section-content').forEach(content => {
+            content.classList.add('expanded');
+        });
+    }
+
+    /**
+     * Set up event listeners for UI elements
+     */
     setupEventListeners() {
-        // Handle expand/collapse for filter section
-        document.getElementById('expandFilters')?.addEventListener('click', this.toggleFilterVisibility);
+        // Handle sidebar toggle
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', this.toggleSidebar);
+        }
+        
+        // Handle section collapsing - important fix here
+        document.querySelectorAll('.collapsible-header').forEach(header => {
+            // Remove any existing listeners to prevent duplicates
+            const newHeader = header.cloneNode(true);
+            header.parentNode.replaceChild(newHeader, header);
+            
+            // Add the event listener
+            newHeader.addEventListener('click', this.toggleSection);
+        });
         
         // Handle fullscreen buttons
         document.querySelectorAll('.fullscreen-btn').forEach(btn => {
@@ -16,18 +43,54 @@ class UIControls {
         });
     }
     
-    toggleFilterVisibility(event) {
-        // Toggle icon between down and up arrows
-        const icon = event.currentTarget.querySelector('i');
-        icon.classList.toggle('fa-chevron-down');
-        icon.classList.toggle('fa-chevron-up');
+    /**
+     * Toggle sidebar visibility
+     */
+    toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('collapsed');
+        sidebar.classList.toggle('expanded');
         
-        // Toggle expanded class on the collapsible content
-        const cardBody = event.currentTarget.closest('.card-header').nextElementSibling;
-        cardBody.classList.toggle('expanded');
+        // Update toggle button icon
+        const icon = document.getElementById('sidebarToggle').querySelector('i');
+        
+        if (sidebar.classList.contains('collapsed')) {
+            icon.className = 'fas fa-bars';
+        } else {
+            icon.className = 'fas fa-chevron-left';
+        }
+        
+        // Trigger window resize to update visualizations
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 300);
     }
     
-    // Update the toggleFullscreen method to fix the sunburst chart display
+    /**
+     * Toggle section expansion/collapse - fixed to work properly
+     */
+    toggleSection(event) {
+        const header = event.currentTarget;
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('.toggle-icon');
+        
+        // Toggle the expanded class on the content
+        content.classList.toggle('expanded');
+        
+        // Update the icon
+        if (content.classList.contains('expanded')) {
+            icon.className = 'fas fa-chevron-down toggle-icon';
+        } else {
+            icon.className = 'fas fa-chevron-right toggle-icon';
+        }
+        
+        // Prevent event from bubbling up
+        event.stopPropagation();
+    }
+    
+    /**
+     * Update the toggleFullscreen method to fix the sunburst chart display
+     */
     toggleFullscreen(event) {
         const card = event.currentTarget.closest('.card');
         const chartContainer = card.querySelector('.chart-container');
@@ -216,5 +279,21 @@ class UIControls {
 
 // Initialize UI Controls when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new UIControls();
+    // Create UI Controls instance
+    const uiControls = new UIControls();
+    
+    // Ensure filter container is correctly styled when generated
+    document.getElementById('applyFields')?.addEventListener('click', () => {
+        // Show the filter container
+        const filterContainer = document.getElementById('filterContainer');
+        if (filterContainer) {
+            filterContainer.style.display = 'block';
+            
+            // Make sure its content is expanded
+            const content = filterContainer.querySelector('.section-content');
+            if (content) {
+                content.classList.add('expanded');
+            }
+        }
+    });
 });

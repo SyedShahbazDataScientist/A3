@@ -113,16 +113,15 @@ body {
 
 /* Sidebar sections */
 .sidebar-section {
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .section-header {
-    padding: 10px 15px;
+    padding: 12px 15px;
     display: flex;
     align-items: center;
     cursor: pointer;
     transition: background-color 0.2s;
-    height: var(--sidebar-item-height);
 }
 
 .section-header:hover {
@@ -146,22 +145,18 @@ body {
     transition: transform 0.3s;
 }
 
-.section-header.collapsed .toggle-icon {
-    transform: rotate(-90deg);
-}
-
-/* Section content */
+/* Important fix for section content expansion/collapse */
 .section-content {
     background-color: rgba(0,0,0,0.1);
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease, padding 0.3s ease;
-    padding: 0;
+    padding: 0 15px;
 }
 
 .section-content.expanded {
-    max-height: 2000px;
-    padding: 10px 15px;
+    max-height: 2000px; /* Large enough to accommodate all content */
+    padding: 15px;
 }
 
 /* Upload area */

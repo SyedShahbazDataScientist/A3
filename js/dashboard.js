@@ -45,6 +45,9 @@ class Dashboard {
         window.addEventListener('resize', this.handleResize.bind(this));
         
         this.initialize();
+        
+        // Make this instance available globally for the fix script
+        window.dashboard = this;
     }
 
     initialize() {
@@ -122,11 +125,38 @@ class Dashboard {
             document.getElementById('loadingIndicator').style.display = 'none';
         });
 
-        // Apply field selections
+        // Update Apply Field Selection button behavior
         document.getElementById('applyFields').addEventListener('click', () => {
+            // Show loading indicator
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'block';
+            }
+            
+            // Update field selections
             this.updateFieldSelections();
+            
+            // Make sure charts are initialized
+            this.initializeCharts();
+            
+            // Create filter widgets
             this.createFilterWidgets();
+            
+            // Show filter container
+            const filterContainer = document.getElementById('filterContainer');
+            if (filterContainer) {
+                filterContainer.style.display = 'block';
+            }
+            
+            // Force immediate rendering
             this.renderAllVisualizations();
+            
+            // Hide loading indicator
+            setTimeout(() => {
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
+            }, 500);
         });
     }
 
@@ -854,10 +884,19 @@ class Dashboard {
 
     // Initialize chart components
     initializeCharts() {
-        this.radialChart = new RadialBarChart('#radialChart', this.tooltip, this);
-        this.chordDiagram = new ChordDiagram('#chordDiagram', this.tooltip, this);
-        this.forceGraph = new ForceDirectedGraph('#forceGraph', this.tooltip, this);
-        this.sunburstChart = new SunburstChart('#sunburstChart', this.tooltip, this);
+        if (!this.radialChart) {
+            this.radialChart = new RadialBarChart('#radialChart', this.tooltip, this);
+        }
+        
+        if (!this.chordDiagram) {
+            this.chordDiagram = new ChordDiagram('#chordDiagram', this.tooltip, this);
+        }
+        
+        if (!this.forceGraph) {
+            this.forceGraph = new ForceDirectedGraph('#forceGraph', this.tooltip, this);
+        }
+        
+        // Sunburst is created in renderSunburstChart method
     }
     
     handleResize() {
